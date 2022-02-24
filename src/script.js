@@ -40,7 +40,7 @@ gltfLoader.setDRACOLoader(dracoLoader);
 const sectionMeshes = [];
 
 gltfLoader.load("/models/spaceCharacter.glb", gltf => {
-  gltf.scene.position.y = -2;
+  gltf.scene.position.y = -1.5;
   scene.add(gltf.scene);
   sectionMeshes.push(gltf.scene);
 });
@@ -81,6 +81,9 @@ const objectsDistance = 4;
 const directionalLight = new THREE.DirectionalLight("#ffffff", 1);
 directionalLight.position.set(1, 1, 0);
 scene.add(directionalLight);
+
+const light = new THREE.AmbientLight(0x404040); // soft white light
+scene.add(light);
 
 /**
  * Sizes
@@ -137,23 +140,23 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 let scrollY = window.scrollY;
 let currentSection = 0;
 
-window.addEventListener("scroll", () => {
-  scrollY = window.scrollY;
-  const newSection = Math.round(scrollY / sizes.height);
-  let t1 = gsap.timeline();
-  if (newSection != currentSection) {
-    currentSection = newSection;
-    t1.to(camera.position, {
-      duration: 3.5,
-      ease: "power2.inOut",
-      z: "1",
-    }).to(camera.position, {
-      duration: 3.5,
-      ease: "power2.inOut",
-      z: "6",
-    });
-  }
-});
+// window.addEventListener("scroll", () => {
+//   scrollY = window.scrollY;
+//   const newSection = Math.round(scrollY / sizes.height);
+//   let t1 = gsap.timeline();
+//   if (newSection != currentSection) {
+//     currentSection = newSection;
+//     t1.to(camera.position, {
+//       duration: 5.5,
+//       ease: "power2.inOut",
+//       z: "1",
+//     }).to(camera.position, {
+//       duration: 3.5,
+//       ease: "power2.inOut",
+//       z: "6",
+//     });
+//   }
+// });
 
 /**
  * Cursor
@@ -168,6 +171,103 @@ window.addEventListener("mousemove", event => {
 });
 
 /**
+ * Btn-camera
+ */
+
+let btnLeft = document.querySelector(".my-btn-Left");
+btnLeft.addEventListener("click", changeCamerarLeft);
+
+function changeCamerarLeft() {
+  btnLeft.classList.toggle("disable");
+  let tween = gsap.to(sectionMeshes[0].rotation, {
+    duration: 2,
+    ease: "power2.inOut",
+    y: "-=1.5",
+  });
+  tween.play();
+  setTimeout(() => {
+    btnLeft.classList.toggle("disable");
+  }, 2000);
+}
+
+let btnRight = document.querySelector(".my-btn-Right");
+btnRight.addEventListener("click", changeCameraRight);
+function changeCameraRight() {
+  btnRight.classList.toggle("disable");
+  let tween = gsap.to(sectionMeshes[0].rotation, {
+    duration: 2,
+    y: "+=1.5",
+    ease: "power2.inOut",
+  });
+  tween.play();
+  setTimeout(() => {
+    btnRight.classList.toggle("disable");
+  }, 2000);
+}
+
+let btnDwon = document.querySelector(".my-btn-Down");
+btnDwon.addEventListener("click", changeCameraDown);
+function changeCameraDown() {
+  btnDwon.classList.toggle("disable");
+  let tween = gsap.to(sectionMeshes[0].rotation, {
+    duration: 2,
+    x: "-=1.5",
+    ease: "power2.inOut",
+  });
+  tween.play();
+  setTimeout(() => {
+    btnDwon.classList.toggle("disable");
+  }, 2000);
+}
+
+let btnUp = document.querySelector(".my-btn-Up");
+btnUp.addEventListener("click", changeCameraUp);
+function changeCameraUp() {
+  btnUp.classList.toggle("disable");
+  let tween = gsap.to(sectionMeshes[0].rotation, {
+    duration: 2,
+    x: "+=1.5",
+    ease: "power2.inOut",
+  });
+  tween.play();
+  setTimeout(() => {
+    btnUp.classList.toggle("disable");
+  }, 2000);
+}
+
+let btnZin = document.querySelector(".my-btn-Zin");
+btnZin.addEventListener("click", changeCameraIn);
+function changeCameraIn() {
+  btnZin.classList.toggle("disable");
+  let tween = gsap.to(sectionMeshes[0].position, {
+    duration: 2,
+    z: "+=3.5",
+    y: "+=0.5",
+    ease: "power2.inOut",
+  });
+  tween.play();
+  setTimeout(() => {
+    btnZin.classList.toggle("disable");
+  }, 2000);
+}
+
+let btnZout = document.querySelector(".my-btn-Zout");
+btnZout.addEventListener("click", changeCameraOut);
+function changeCameraOut() {
+  btnZout.classList.toggle("disable");
+  let tween = gsap.to(sectionMeshes[0].position, {
+    duration: 2,
+    z: "-=3.5",
+    y: "-=0.5",
+    ease: "power2.inOut",
+  });
+  tween.play();
+  setTimeout(() => {
+    btnZout.classList.toggle("disable");
+  }, 2000);
+}
+
+/**
  * Animate
  */
 const clock = new THREE.Clock();
@@ -180,7 +280,6 @@ const tick = () => {
 
   // Animate camera
   camera.position.y = (-scrollY / sizes.height) * objectsDistance;
-  camera.position.z = camera.position.z;
   const parallaxX = cursor.x * 0.5;
   const parallaxY = -cursor.y * 0.5;
   cameraGroup.position.x +=
