@@ -31,7 +31,7 @@ const scene = new THREE.Scene();
  * Objects
  */
 
-//Spaceman Models
+// Models
 const dracoLoader = new DRACOLoader();
 dracoLoader.setDecoderPath("/draco/");
 
@@ -39,8 +39,7 @@ const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
 const sectionMeshes = [];
 
-gltfLoader.load("/models/spaceCharacter.glb", gltf => {
-  gltf.scene.position.y = -1.5;
+gltfLoader.load("/models/myPlanet.glb", gltf => {
   scene.add(gltf.scene);
   sectionMeshes.push(gltf.scene);
 });
@@ -80,7 +79,14 @@ const objectsDistance = 4;
  */
 const directionalLight = new THREE.DirectionalLight("#ffffff", 1);
 directionalLight.position.set(1, 1, 0);
+directionalLight.castShadow = true;
 scene.add(directionalLight);
+
+const directionalLightCameraHelper = new THREE.CameraHelper(
+  directionalLight.shadow.camera
+);
+
+scene.add(directionalLightCameraHelper);
 
 const light = new THREE.AmbientLight(0x404040); // soft white light
 scene.add(light);
@@ -130,9 +136,13 @@ cameraGroup.add(camera);
 const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
   alpha: true,
+  antialias: true,
 });
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 /**
  * Scroll
